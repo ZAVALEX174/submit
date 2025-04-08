@@ -76,8 +76,10 @@
     </style>
 </head>
 <body>
-<input type="file" class="input-file" id="input-file" name="file" multiple="true" enctype="multipart/form-data">
-<button class="upload-btn" disabled>Отправить</button>
+<form action=""  method="POST" enctype="multipart/form-data">
+	<input type="file" class="input-file" id="input-file" name="file" multiple="true">
+<button class="upload-btn" type="submit" disabled>Отправить</button>
+</form>
 <div class="status"></div>
 <div class="file-list"></div>
 

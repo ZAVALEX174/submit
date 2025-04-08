@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .file-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 20px;
+            background: #eee;
+            border-radius: 10px;
+            margin: 0 15px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: #4CAF50;
+            transition: width 0.3s ease;
+        }
+
+        .delete-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <form method="POST" enctype="multipart/form-data" id="uploadForm">
+        <input type="file" multiple id="fileInput">
+        <div id="fileList"></div>
+        <button type="submit">Отправить</button>
+    </form>
+
+    <script>
+        const MAX_FILES = 3;
+        const fileList = document.getElementById('fileList');
+        const fileInput = document.getElementById('fileInput');
+        let files = new Map();
+
+        fileInput.addEventListener('change', function(e) {
+            const newFiles = Array.from(e.target.files);
+            const availableSlots = MAX_FILES - files.size;
+            
+            if (newFiles.length > availableSlots) {
+                alert(`Можно добавить только ${availableSlots} файлов`);
+            }
+
+            newFiles.slice(0, availableSlots).forEach(file => {
+                if (files.size >= MAX_FILES) return;
+                const id = Date.now() + Math.random();
+                files.set(id, { file, progress: 0 });
+                renderFile(file, id);
+            });
+
+            e.target.value = '';
+        });
+
+        function renderFile(file, id) {
+            const item = document.createElement('div');
+            item.className = 'file-item';
+            item.dataset.fileId = id;
+            
+            item.innerHTML = `
+                <span>${file.name}</span>
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+                <button type="button" class="delete-btn">×</button>
+            `;
+
+            item.querySelector('.delete-btn').addEventListener('click', () => {
+                files.delete(id);
+                item.remove();
+                updateFormData();
+            });
+
+            fileList.appendChild(item);
+            updateFormData();
+        }
+
+        function updateFormData() {
+            const dataTransfer = new DataTransfer();
+            Array.from(files.values()).forEach(({ file }) => {
+                dataTransfer.items.add(file);
+            });
+            fileInput.files = dataTransfer.files;
+        }
+
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            
+            Array.from(files.entries()).forEach(([id, { file }]) => {
+                formData.append('files[]', file);
+                const progressBar = document.querySelector(`[data-file-id="${id}"] .progress`);
+                const container = document.querySelector(`[data-file-id="${id}"] .progress-bar`);
+                container.style.display = 'block';
+                progressBar.style.width = '0%';
+            });
+
+            try {
+                // Пример с использованием fetch
+                const response = await fetch('https://httpbin.org/post', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    alert('Файлы успешно загружены!');
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки:', error);
+            }
+        });
+    </script>
+</body>
+</html>
