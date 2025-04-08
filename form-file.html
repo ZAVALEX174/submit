@@ -33,8 +33,8 @@
     </style>
 </head>
 <body>
-    <form id="uploadForm">
-        <input type="file" multiple id="fileInput">
+    <form method="post" id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="file-2[]" multiple id="input-file" class="input-file">
         <div class="file-list"></div>
         <div class="warning">Максимум 3 файла!</div>
         <button type="submit">Отправить</button>
@@ -42,7 +42,7 @@
 
     <script>
         const MAX_FILES = 3;
-        const fileInput = document.getElementById('fileInput');
+        const fileInput = document.getElementById('input-file');
         const fileList = document.querySelector('.file-list');
         const warning = document.querySelector('.warning');
         let files = [];
