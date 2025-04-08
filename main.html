@@ -18,14 +18,13 @@
             border-radius: 10px;
             margin: 0 15px;
             overflow: hidden;
-            display: none;
+            position: relative;
         }
 
-        .progress {
+        .progress-fill {
             width: 0%;
             height: 100%;
-            background: #4CAF50;
-            transition: width 0.3s ease;
+            transition: width 0.3s ease, background-color 0.3s ease;
         }
 
         .delete-btn {
@@ -50,6 +49,7 @@
         const fileList = document.getElementById('fileList');
         const fileInput = document.getElementById('fileInput');
         let files = new Map();
+        let totalSize = 0;
 
         fileInput.addEventListener('change', function(e) {
             const newFiles = Array.from(e.target.files);
@@ -62,7 +62,13 @@
             newFiles.slice(0, availableSlots).forEach(file => {
                 if (files.size >= MAX_FILES) return;
                 const id = Date.now() + Math.random();
-                files.set(id, { file, progress: 0 });
+                files.set(id, { 
+                    file,
+                    element: null,
+                    size: file.size,
+                    loaded: 0
+                });
+                totalSize += file.size;
                 renderFile(file, id);
             });
 
@@ -77,17 +83,20 @@
             item.innerHTML = `
                 <span>${file.name}</span>
                 <div class="progress-bar">
-                    <div class="progress"></div>
+                    <div class="progress-fill"></div>
                 </div>
                 <button type="button" class="delete-btn">×</button>
             `;
 
-            item.querySelector('.delete-btn').addEventListener('click', () => {
+            const deleteBtn = item.querySelector('.delete-btn');
+            deleteBtn.addEventListener('click', () => {
+                totalSize -= files.get(id).size;
                 files.delete(id);
                 item.remove();
                 updateFormData();
             });
 
+            files.get(id).element = item;
             fileList.appendChild(item);
             updateFormData();
         }
@@ -102,29 +111,61 @@
 
         document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            if (files.size === 0) return;
+
             const formData = new FormData();
+            const fileEntries = Array.from(files.entries());
             
-            Array.from(files.entries()).forEach(([id, { file }]) => {
+            // Добавляем все файлы в FormData
+            fileEntries.forEach(([id, { file }]) => {
                 formData.append('files[]', file);
-                const progressBar = document.querySelector(`[data-file-id="${id}"] .progress`);
-                const container = document.querySelector(`[data-file-id="${id}"] .progress-bar`);
-                container.style.display = 'block';
-                progressBar.style.width = '0%';
             });
 
-            try {
-                // Пример с использованием fetch
-                const response = await fetch('https://httpbin.org/post', {
-                    method: 'POST',
-                    body: formData,
-                });
+            // Сбрасываем прогресс перед отправкой
+            fileEntries.forEach(([id, fileData]) => {
+                const progressFill = fileData.element.querySelector('.progress-fill');
+                progressFill.style.width = '0%';
+                progressFill.style.backgroundColor = `hsl(0, 70%, 50%)`;
+            });
 
-                if (response.ok) {
-                    alert('Файлы успешно загружены!');
+            const xhr = new XMLHttpRequest();
+            
+            xhr.upload.addEventListener('progress', (event) => {
+                if (event.lengthComputable && totalSize > 0) {
+                    const totalLoaded = event.loaded;
+                    
+                    // Обновляем прогресс для каждого файла
+                    fileEntries.forEach(([id, fileData]) => {
+                        const percent = (totalLoaded * fileData.size) / totalSize;
+                        const currentPercent = Math.min((percent / fileData.size) * 100, 100);
+                        const progressFill = fileData.element.querySelector('.progress-fill');
+                        
+                        progressFill.style.width = `${currentPercent}%`;
+                        const hue = (120 * currentPercent) / 100;
+                        progressFill.style.backgroundColor = `hsl(${hue}, 70%, 50%)`;
+                    });
                 }
-            } catch (error) {
-                console.error('Ошибка загрузки:', error);
-            }
+            });
+
+            xhr.addEventListener('load', () => {
+                if (xhr.status === 200) {
+                    fileEntries.forEach(([id, fileData]) => {
+                        const progressFill = fileData.element.querySelector('.progress-fill');
+                        progressFill.style.width = '100%';
+                        progressFill.style.backgroundColor = `hsl(120, 70%, 50%)`;
+                    });
+                }
+            });
+
+            xhr.addEventListener('error', () => {
+                fileEntries.forEach(([id, fileData]) => {
+                    const progressFill = fileData.element.querySelector('.progress-fill');
+                    progressFill.style.backgroundColor = '#ff0000';
+                });
+            });
+
+            xhr.open('POST', 'https://httpbin.org/post');
+            xhr.send(formData);
         });
     </script>
 </body>
