@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .file-list {
+            margin: 15px 0;
+        }
+        
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 8px;
+            border-radius: 5px;
+        }
+        
+        .delete-btn {
+            margin-left: auto;
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        .warning {
+            color: #ff4444;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <form id="uploadForm">
+        <input type="file" multiple id="fileInput">
+        <div class="file-list"></div>
+        <div class="warning">Максимум 3 файла!</div>
+        <button type="submit">Отправить</button>
+    </form>
+
+    <script>
+        const MAX_FILES = 3;
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.querySelector('.file-list');
+        const warning = document.querySelector('.warning');
+        let files = [];
+
+        // Обработчик выбора файлов
+        fileInput.addEventListener('change', function(e) {
+            const newFiles = Array.from(e.target.files);
+            const availableSlots = MAX_FILES - files.length;
+            
+            // Проверка лимита
+            if (newFiles.length > availableSlots) {
+                showWarning();
+                newFiles.length = availableSlots; // Обрезаем массив
+            }
+            
+            // Добавляем файлы с уникальными ID
+            files = [
+                ...files,
+                ...newFiles.map(file => ({
+                    id: Date.now() + Math.random(),
+                    file
+                }))
+            ];
+            
+            renderFileList();
+            updateFileInput();
+            e.target.value = '';
+        });
+
+        // Рендер списка файлов
+        // function renderFileList() {
+        //     fileList.innerHTML = '';
+        //     files.forEach(({ id, file }) => {
+        //         const item = document.createElement('div');
+        //         item.className = 'file-item';
+        //         item.innerHTML = `
+        //             ${file.name}
+        //             <button class="delete-btn" data-id="${id}">×</button>
+        //         `;
+        //         fileList.appendChild(item);
+        //     });
+            
+        //     // Добавляем обработчики удаления
+        //     document.querySelectorAll('.delete-btn').forEach(btn => {
+							
+							
+        //         btn.addEventListener('click', deleteFile);
+        //     });
+        // }
+				function renderFileList() {
+        fileList.innerHTML = '';
+        files.forEach(({ id, file }) => {
+            const item = document.createElement('div');
+            item.className = 'file-item';
+            item.innerHTML = `
+                ${file.name}
+                <button class="delete-btn" data-id="${id}">×</button>
+            `;
+            fileList.appendChild(item);
+        });
+    }
+
+        // Удаление файла
+        // function deleteFile(e) {
+				// 	console.log(e.target);
+        //     const id = e.target.dataset.id;
+        //     files = files.filter(file => file.id !== id);
+        //     renderFileList();
+        //     updateFileInput();
+        // }
+
+				document.querySelector('.file-list').addEventListener('click', function(e) {
+        if (e.target.classList.contains('delete-btn')) {
+            const id = e.target.dataset.id;
+            files = files.filter(file => String(file.id) === String(id) ? false : true);
+            renderFileList();
+            updateFileInput();
+        }
+    });
+
+        // Обновление реального input
+        function updateFileInput() {
+            const dataTransfer = new DataTransfer();
+            files.forEach(({ file }) => dataTransfer.items.add(file));
+            fileInput.files = dataTransfer.files;
+        }
+
+        // Показать предупреждение
+        function showWarning() {
+            warning.style.display = 'block';
+            setTimeout(() => warning.style.display = 'none', 3000);
+        }
+    </script>
+</body>
+</html>
