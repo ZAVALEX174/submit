@@ -72,26 +72,6 @@
             e.target.value = '';
         });
 
-        // Рендер списка файлов
-        // function renderFileList() {
-        //     fileList.innerHTML = '';
-        //     files.forEach(({ id, file }) => {
-        //         const item = document.createElement('div');
-        //         item.className = 'file-item';
-        //         item.innerHTML = `
-        //             ${file.name}
-        //             <button class="delete-btn" data-id="${id}">×</button>
-        //         `;
-        //         fileList.appendChild(item);
-        //     });
-            
-        //     // Добавляем обработчики удаления
-        //     document.querySelectorAll('.delete-btn').forEach(btn => {
-							
-							
-        //         btn.addEventListener('click', deleteFile);
-        //     });
-        // }
 				function renderFileList() {
         fileList.innerHTML = '';
         files.forEach(({ id, file }) => {
@@ -104,15 +84,6 @@
             fileList.appendChild(item);
         });
     }
-
-        // Удаление файла
-        // function deleteFile(e) {
-				// 	console.log(e.target);
-        //     const id = e.target.dataset.id;
-        //     files = files.filter(file => file.id !== id);
-        //     renderFileList();
-        //     updateFileInput();
-        // }
 
 				document.querySelector('.file-list').addEventListener('click', function(e) {
         if (e.target.classList.contains('delete-btn')) {
