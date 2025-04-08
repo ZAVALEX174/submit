@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Загрузка файлов</title>
+    <style>
+        .file-list {
+            margin: 20px 0;
+            max-width: 500px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .file-info {
+            flex-grow: 1;
+            margin-right: 15px;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 0 10px;
+            flex-basis: 150px;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+            background-color: #4CAF50;
+            transition: width 0.3s ease;
+        }
+
+        .delete-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .upload-btn {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .upload-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 10px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+<input type="file" multiple>
+<button class="upload-btn" disabled>Отправить</button>
+<div class="status"></div>
+<div class="file-list"></div>
+
+<script>
+    const fileInput = document.querySelector('input[type="file"]');
+    const fileList = document.querySelector('.file-list');
+    const uploadBtn = document.querySelector('.upload-btn');
+    const statusDiv = document.querySelector('.status');
+    let files = [];
+    let isUploading = false;
+
+    fileInput.addEventListener('change', handleFileSelect);
+    uploadBtn.addEventListener('click', handleUpload);
+
+    function handleFileSelect(e) {
+        if (isUploading) return;
+
+        const newFiles = Array.from(e.target.files);
+        const availableSlots = 3 - files.length;
+
+        if (availableSlots <= 0) {
+            alert('Максимум 3 файла!');
+            e.target.value = '';
+            return;
+        }
+
+        const filteredFiles = newFiles.slice(0, availableSlots);
+        if (newFiles.length > availableSlots) {
+            alert(`Добавлено только ${availableSlots} файл(а)`);
+        }
+
+        files = [...files, ...filteredFiles];
+        renderFileList();
+        updateUI();
+        e.target.value = '';
+    }
+
+    function renderFileList() {
+        fileList.innerHTML = '';
+        files.forEach((file, index) => {
+            const item = document.createElement('div');
+            item.className = 'file-item';
+
+            item.innerHTML = `
+                    <div class="file-info">${file.name} (${formatSize(file.size)})</div>
+                    <div class="progress-bar hidden">
+                        <div class="progress"></div>
+                    </div>
+                    <button class="delete-btn" ${isUploading ? 'disabled' : ''}>Удалить</button>
+                `;
+
+            item.querySelector('.delete-btn').addEventListener('click', () => {
+                if (!isUploading) {
+                    files = files.filter((_, i) => i !== index);
+                    renderFileList();
+                    updateUI();
+                }
+            });
+
+            fileList.appendChild(item);
+        });
+    }
+
+    async function handleUpload() {
+        if (files.length === 0 || isUploading) return;
+
+        isUploading = true;
+        updateUI();
+        statusDiv.textContent = 'Загрузка...';
+
+        // Показываем прогресс-бары
+        document.querySelectorAll('.progress-bar').forEach(el => {
+            el.classList.remove('hidden');
+        });
+
+        try {
+            // Для реального использования замените на ваш URL
+            const uploadPromises = files.map((file, index) => {
+                return uploadFile(file, index);
+            });
+
+            await Promise.all(uploadPromises);
+            statusDiv.textContent = 'Все файлы успешно загружены!';
+        } catch (error) {
+            console.error('Ошибка загрузки:', error);
+            statusDiv.textContent = 'Произошла ошибка при загрузке файлов';
+        } finally {
+            isUploading = false;
+            updateUI();
+        }
+    }
+
+    async function uploadFile(file, index) {
+        const progressBar = fileList.children[index].querySelector('.progress');
+        const progressContainer = fileList.children[index].querySelector('.progress-bar');
+
+        progressContainer.classList.remove('hidden');
+        progressBar.style.width = '0%';
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            // Пример с реальным запросом (используйте ваш URL)
+            const response = await fetch('https://httpbin.org/post', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                progressBar.style.width = '100%';
+                return await response.json();
+            } else {
+                throw new Error('Ошибка сервера');
+            }
+        } catch (error) {
+            progressBar.style.backgroundColor = '#ff4444';
+            throw error;
+        }
+    }
+
+    function updateUI() {
+        uploadBtn.disabled = files.length === 0 || isUploading;
+        fileInput.disabled = isUploading || files.length >= 3;
+
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.disabled = isUploading;
+        });
+    }
+
+    function formatSize(bytes) {
+        const units = ['B', 'KB', 'MB', 'GB'];
+        let size = bytes;
+        let unitIndex = 0;
+
+        while (size >= 1024 && unitIndex < units.length - 1) {
+            size /= 1024;
+            unitIndex++;
+        }
+
+        return `${size.toFixed(2)} ${units[unitIndex]}`;
+    }
+</script>
+</body>
+</html>
