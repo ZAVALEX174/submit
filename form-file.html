@@ -266,7 +266,7 @@
     function updateFileInput() {
         const dataTransfer = new DataTransfer();
         files.forEach(({file}) => dataTransfer.items.add(file));
-        fileInput.files = dataTransfer.files;
+        // fileInput.files = dataTransfer.files;
     }
 
     function showWarning() {
