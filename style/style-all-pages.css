@@ -20530,7 +20530,7 @@ input[type='number'] {
 /*измекнение от 09_04_25*/
 .file-list {
     margin: 15px 0;
-    padding: 5px;
+    padding: 0;
     /*border: 1px solid rgba(174, 174, 174, 1);*/
     /*border-radius: 5px;*/
     /*box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);*/
