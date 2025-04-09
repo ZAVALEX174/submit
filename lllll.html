@@ -23,18 +23,20 @@
 
         .progress-container {
             width: 100%;
-            height: 20px;
-            background: #e9ecef;
-            border-radius: 10px;
-            overflow: hidden;
             margin-right: 10px;
+            /* Убираем стили для полоски */
+            background: none;
+            height: auto;
+        }
+
+        .progress-percent {
+            color: #4dabf7;
+            font-weight: bold;
+            font-size: 14px;
         }
 
         .progress-bar {
-            width: 0%;
-            height: 100%;
-            background: #4dabf7;
-            transition: width 0.3s ease;
+            display: none;
         }
 
         .file-name {
@@ -98,7 +100,7 @@
 
         item.innerHTML = `
             <div class="progress-container ${showProgress ? '' : 'hidden'}">
-                <div class="progress-bar"></div>
+                <div class="progress-percent">0%</div>
             </div>
             <span class="file-name ${showProgress ? 'hidden' : ''}">${file.name}</span>
             <button class="delete-btn ${showProgress ? 'hidden' : ''}">
@@ -126,11 +128,12 @@
     function simulateUpload(fileId) {
         let progress = 0;
         // Используем корректный селектор через querySelector
-        const progressBar = document.getElementById(fileId).querySelector('.progress-bar');
+        const percentElement = document.querySelector(`#${fileId} .progress-percent`);
 
         const interval = setInterval(() => {
             progress += 2;
-            progressBar.style.width = `${progress}%`;
+            // Обновляем текст вместо ширины
+            percentElement.textContent = `${progress}%`;
 
             if (progress >= 100) {
                 clearInterval(interval);
