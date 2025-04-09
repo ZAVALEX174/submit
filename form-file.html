@@ -143,23 +143,23 @@
     const warning = document.querySelector('.warning');
     let files = [];
 
-    // Обработчик выбора файлов
-    fileInput.addEventListener('change', function (e) {
+    fileInput.addEventListener('change', function(e) {
         const newFiles = Array.from(e.target.files);
         const availableSlots = MAX_FILES - files.length;
 
-        // Проверка лимита
         if (newFiles.length > availableSlots) {
             showWarning();
-            newFiles.length = availableSlots; // Обрезаем массив
+            newFiles.length = availableSlots;
         }
 
-        // Добавляем файлы с уникальными ID
         files = [
             ...files,
             ...newFiles.map(file => ({
                 id: Date.now() + Math.random(),
-                file
+                file,
+                progress: 0,
+                intervalId: null,
+                element: null
             }))
         ];
 
@@ -169,108 +169,106 @@
     });
 
     function renderFileList() {
-        fileList.innerHTML = '';
-        files.forEach(({id, file}) => {
-            const item = document.createElement('div');
-            item.className = 'file-item';
-            item.innerHTML = `
-                <div role="feed" aria-busy="true" aria-describedby="progress" class="file-name">${file.name}</div>
-
-                <div class="upload">
-                    <div id="progressCounter" class="upload__counter">100%</div>
-                    <progress id="progressBar" class="upload__indicator" value="0" max="100"></progress>
-                </div>
-
-                <button class="delete-btn" data-id="${id}">
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <g clip-path="url(#clip0_2181_45441)">
-                        <path d="M14.7863 7.07153L13.5006 17.3572H4.50056L3.21484 7.07153" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M1.28613 4.5H16.7147" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M5.73438 4.12719V1.9029C5.73438 1.56191 5.86983 1.23488 6.11095 0.993764C6.35207 0.752646 6.6791 0.617188 7.02009 0.617188H10.8772C11.2182 0.617188 11.5453 0.752646 11.7864 0.993764C12.0275 1.23488 12.1629 1.56191 12.1629 1.9029V4.47433" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </g>
-                        <defs>
-                        <clipPath id="clip0_2181_45441">
-                        <rect width="18" height="18" fill="white"/>
-                        </clipPath>
-                        </defs>
-                    </svg>
-                </button>
-            `;
-            fileList.prepend(item);
+        // Сохраняем существующие элементы
+        const existingElements = new Map();
+        fileList.querySelectorAll('.file-item').forEach(item => {
+            existingElements.set(item.dataset.id, item);
         });
 
-        const progressBar = document.getElementById('progressBar');
-        const uploadSuccess = document.getElementById('successText');
-        const uploadCounter = document.getElementById('progressCounter');
-        console.log(progressBar, uploadCounter);
-        let progressWidth = 0
+        fileList.innerHTML = '';
 
-        function start() {
-            setInterval(() => {
-                if (progressWidth >= 100) {
-                    clearInterval();
-                } else {
-                    progressWidth++;
-                    // progressBar.style.width = progressWidth + '%';
-                    if (progressBar) {
-                        progressBar.value = progressWidth;
-                        uploadCounter.textContent = progressWidth + '%';
-                        clearInterval();
-                    }
-                }
-            }, 10)
-        }
+        files.forEach(fileData => {
+            let item = existingElements.get(String(fileData.id)) || createFileElement(fileData);
 
-        start();
+            // Обновляем прогресс
+            const progressBar = item.querySelector('progress');
+            const counter = item.querySelector('.upload__counter');
+            progressBar.value = fileData.progress;
+            counter.textContent = `${fileData.progress}%`;
+
+            // Запускаем прогресс если файл новый
+            if (!fileData.intervalId && fileData.progress === 0) {
+                startProgressSimulation(fileData);
+            }
+
+            fileList.appendChild(item);
+            fileData.element = item;
+        });
     }
 
-    // document.querySelector('.file-list').addEventListener('click', function (e) {
-    //     if (e.target.classList.contains('delete-btn')) {
-    //         const id = e.target.dataset.id;
-    //         files = files.filter(file => String(file.id) === String(id) ? false : true);
-    //         renderFileList();
-    //         updateFileInput();
-    //     }
-    // });
+    function createFileElement(fileData) {
+        const item = document.createElement('div');
+        item.className = 'file-item';
+        item.dataset.id = fileData.id;
+        item.innerHTML = `
+            <div class="file-name">${fileData.file.name}</div>
+            <div class="upload">
+                <div class="upload__counter">0%</div>
+                <progress class="upload__indicator" value="0" max="100"></progress>
+            </div>
+            <button class="delete-btn" data-id="${fileData.id}">
+                               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <g clip-path="url(#clip0_2181_45441)">
+                  <path d="M14.7863 7.07153L13.5006 17.3572H4.50056L3.21484 7.07153" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M1.28613 4.5H16.7147" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M5.73438 4.12719V1.9029C5.73438 1.56191 5.86983 1.23488 6.11095 0.993764C6.35207 0.752646 6.6791 0.617188 7.02009 0.617188H10.8772C11.2182 0.617188 11.5453 0.752646 11.7864 0.993764C12.0275 1.23488 12.1629 1.56191 12.1629 1.9029V4.47433" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </g>
+                  <defs>
+                  <clipPath id="clip0_2181_45441">
+                  <rect width="18" height="18" fill="white"/>
+                  </clipPath>
+                  </defs>
+              </svg>
+            </button>
+        `;
+        return item;
+    }
 
-    // function deleteFile() {
-    //     let containerItemFile = document.querySelector('.file-list');
-    //     let delItemFileBtns = containerItemFile.querySelectorAll('.delete-btn');
-    //     delItemFileBtns.forEach(button => {
-    //         button.addEventListener('click', (e) => {
-    //             e.stopPropagation();
-    //             console.log(e.target);
-    //             const id = e.target.dataset.id;
-    //             console.log(id);
-    //             files = files.filter(file => String(file.id) === String(id) ? false : true);
-    //             renderFileList();
-    //             updateFileInput();
-    //         })
-    //     })
-    // }
+    function startProgressSimulation(fileData) {
+        fileData.intervalId = setInterval(() => {
+            if (fileData.progress >= 100) {
+                clearInterval(fileData.intervalId);
+                fileData.intervalId = null;
+                return;
+            }
 
-    document.querySelector('.file-list').addEventListener('click', function (e) {
-        // Ищем ближайшего родителя с классом delete-btn
+            fileData.progress += Math.floor(Math.random() * 5) + 1;
+            if (fileData.progress > 100) fileData.progress = 100;
+
+            if (fileData.element) {
+                const progressBar = fileData.element.querySelector('progress');
+                const counter = fileData.element.querySelector('.upload__counter');
+                progressBar.value = fileData.progress;
+                counter.textContent = `${fileData.progress}%`;
+            }
+        }, 200);
+    }
+
+    fileList.addEventListener('click', function(e) {
         const deleteBtn = e.target.closest('.delete-btn');
-
         if (deleteBtn) {
             const id = deleteBtn.dataset.id;
-            files = files.filter(file => String(file.id) !== String(id));
-            renderFileList();
+            const fileIndex = files.findIndex(f => String(f.id) === String(id));
+
+            if (fileIndex > -1) {
+                // Останавливаем прогресс
+                if (files[fileIndex].intervalId) {
+                    clearInterval(files[fileIndex].intervalId);
+                }
+                files.splice(fileIndex, 1);
+            }
+
+            deleteBtn.closest('.file-item').remove();
             updateFileInput();
         }
     });
 
-    // Обновление реального input
     function updateFileInput() {
         const dataTransfer = new DataTransfer();
-        files.forEach(({file}) => dataTransfer.items.add(file));
+        files.forEach(({ file }) => dataTransfer.items.add(file));
         fileInput.files = dataTransfer.files;
-
-        // deleteFile();
     }
 
-    // Показать предупреждение
     function showWarning() {
         warning.style.display = 'block';
         setTimeout(() => warning.style.display = 'none', 3000);
