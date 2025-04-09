@@ -20690,4 +20690,16 @@ input[type='number'] {
     margin-top: 15px;
 }
 
+
+.input-file {
+    display: block !important;
+    opacity: 1;
+    background-color: red;
+    visibility: visible;
+    width: 100px;
+    height: 100%;
+    position: relative;
+    z-index: 999999999999;
+}
+
 /*измекнение от 09_04_25*/
