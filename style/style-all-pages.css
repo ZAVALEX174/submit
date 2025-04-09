@@ -20588,6 +20588,7 @@ input[type='number'] {
     line-height: 47px;
     border-radius: 8px;
     padding: 0px 8px;
+    color: var(--color-orange);
 }
 
 .file-name:hover {
