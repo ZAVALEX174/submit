@@ -8503,6 +8503,7 @@ svg {
 
 /*modals.css*/
 .modals {
+    display: flex;
     position: fixed;
     width: 100%;
     height: 100vh;
@@ -20524,3 +20525,185 @@ input[type='number'] {
 .btn.cart__btn_progects.our-projects-cart__btn:hover {
     background-color: var(--ligth-gray);
 }
+
+
+/*измекнение от 09_04_25*/
+.file-list {
+    margin: 15px 0;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 8px;
+    border-radius: 5px;
+}
+
+.delete-btn {
+    background: transparent;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    margin-left: 10px;
+
+    position: relative;
+    z-index: 1;
+}
+
+.delete-btn svg {
+    width: 18px;
+    height: 18px;
+    color: #2B2A29;
+    position: relative;
+    z-index: 0;
+}
+
+.delete-btn:hover svg {
+    color: var(--color-orange);
+}
+
+.warning {
+    color: #ff4444;
+    margin-top: 10px;
+    display: none;
+}
+
+.file-name {
+    width: 100%;
+    max-width: 50%;
+    border: 1px solid red;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-right: 10px;
+}
+
+
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.row + .row {
+    margin-top: 25px;
+}
+
+.row--upload {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+}
+
+.row-label {
+    margin-right: 55px;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1;
+}
+
+.upload, .button {
+    width: 350px;
+}
+
+.upload {
+    position: relative;
+    border: 1px solid #FF8630;
+    border-radius: 16px;
+}
+
+.upload__counter {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+
+.upload__indicator {
+    overflow: hidden;
+    display: block;
+    width: 0;
+    border: none;
+    border-radius: 16px;
+    height: 28px;
+    background-color: #FF8630;
+}
+
+.upload__indicator::-webkit-progress-bar {
+    border: none;
+    background-color: #FF8630;
+    border-radius: 16px;
+}
+
+.upload__indicator::-webkit-progress-value {
+    background-color: #FF8630;
+    border-radius: 16px;
+}
+
+.upload__indicator::-moz-progress-bar {
+    border: none;
+    background-color: #FF8630;
+    border-radius: 16px;
+}
+
+.success-message {
+    height: 22px;
+    margin-top: 15px;
+}
+
+.button {
+    display: block;
+    min-width: 210px;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    padding: 9px 15px;
+    color: #000000;
+    font-size: 18px;
+    font-weight: 300;
+    font-family: inherit;
+    transition: background-color 0.2s linear;
+}
+
+.button-orange {
+    background-color: #FF8630;
+}
+
+.button:hover {
+    background-color: #FFFFFF;
+    cursor: pointer;
+    transition: background-color 0.2s linear;
+}
+
+.button:focus-visible {
+    border: 2px solid #FFFFFF;
+    outline: none;
+}
+
+.button:focus {
+    border: 2px solid #FFFFFF;
+    outline: none;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 30px;
+    }
+
+    .row {
+        display: block;
+    }
+
+    .upload, .button, .container {
+        width: 100%;
+    }
+
+    .upload {
+        margin-top: 10px;
+    }
+}
+
+
+/*измекнение от 09_04_25*/
