@@ -1,10 +1,148 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <style>
+        .file-upload {
+            max-width: 400px;
+            margin: 20px;
+        }
+
+        .file-list {
+            margin-top: 15px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-right: 10px;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #4dabf7;
+            transition: width 0.3s ease;
+        }
+
+        .file-name {
+            flex-grow: 1;
+            margin: 0 10px;
+        }
+
+        .delete-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-$END$
+<div class="file-upload">
+    <input type="file" id="fileInput" class="hidden" multiple accept="image/*">
+    <button onclick="document.getElementById('fileInput').click()">Добавить файл</button>
+    <div class="file-list" id="fileList"></div>
+</div>
+
+<script>
+    const MAX_FILES = 3;
+    let files = []; //будет храниться весь массив с данными из выбранных файлов
+    const uploadStates = new Map();
+
+    document.getElementById('fileInput').addEventListener('change', function (e) {
+        const newFiles = Array.from(e.target.files);
+        if (files.length + newFiles.length > MAX_FILES) {
+            alert(`Максимум ${MAX_FILES} файлов`);
+            return;
+        }
+
+        newFiles.forEach(file => {
+            if (files.length >= MAX_FILES) return;
+
+            // Генерируем безопасный ID для селектора
+            const fileId = `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+            files.push({file, fileId});
+            renderFileItem(file, fileId, true);
+            simulateUpload(fileId);
+        });
+
+        e.target.value = '';
+        console.log(files, "радеюсь тут можно получить конечный вариант массива2");
+    });
+
+
+    function renderFileItem(file, fileId, showProgress) {
+        const item = document.createElement('div');
+        item.className = 'file-item';
+        item.id = fileId;
+
+        item.innerHTML = `
+            <div class="progress-container ${showProgress ? '' : 'hidden'}">
+                <div class="progress-bar"></div>
+            </div>
+            <span class="file-name ${showProgress ? 'hidden' : ''}">${file.name}</span>
+            <button class="delete-btn ${showProgress ? 'hidden' : ''}">×</button>
+        `;
+
+        item.querySelector('.delete-btn').addEventListener('click', () => removeFile(fileId));
+        document.getElementById('fileList').appendChild(item);
+
+        console.log(files, "радеюсь тут можно получить конечный вариант массива");
+    }
+
+    function simulateUpload(fileId) {
+        let progress = 0;
+        // Используем корректный селектор через querySelector
+        const progressBar = document.getElementById(fileId).querySelector('.progress-bar');
+
+        const interval = setInterval(() => {
+            progress += 2;
+            progressBar.style.width = `${progress}%`;
+
+            if (progress >= 100) {
+                clearInterval(interval);
+                uploadStates.set(fileId, true);
+                finalizeUpload(fileId);
+            }
+        }, 50);
+    }
+
+    function finalizeUpload(fileId) {
+        const container = document.getElementById(fileId);
+        container.querySelector('.progress-container').classList.add('hidden');
+        container.querySelector('.file-name').classList.remove('hidden');
+        container.querySelector('.delete-btn').classList.remove('hidden');
+    }
+
+    function removeFile(fileId) {
+        files = files.filter(f => f.fileId !== fileId);
+        const element = document.getElementById(fileId);
+        if (element) {
+            element.remove();
+            console.log(files);
+        }
+    }
+
+
+</script>
 </body>
 </html>

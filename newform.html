@@ -5,8 +5,22 @@
     <title>Title</title>
 </head>
 <body>
-<form action="">
-    <input type="file" name="file" id="file">
+<form method="POST" id="uploadForm"
+      enctype="multipart/form-data">
+    <input name="test1" value="123" type="file" multiple="multiple" accept="image/*">
+
+    <input type="submit">
 </form>
+
+<script>
+    let form = document.querySelector('form');
+    let formData = new FormData(form);
+
+
+    form.addEventListener('change', function (e) {
+        console.log(formData);
+        console.log(Array.from(formData));
+    });
+</script>
 </body>
 </html>
