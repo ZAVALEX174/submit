@@ -20530,15 +20530,21 @@ input[type='number'] {
 /*измекнение от 09_04_25*/
 .file-list {
     margin: 15px 0;
+    padding: 5px;
+    /*border: 1px solid rgba(174, 174, 174, 1);*/
+    /*border-radius: 5px;*/
+    /*box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);*/
+    display: flex;
+    flex-direction: column;
+    row-gap: 15px;
 }
 
 .file-item {
+    outline: none;
     display: flex;
     align-items: center;
-    padding: 10px;
-    border: 1px solid #ddd;
-    margin-bottom: 8px;
-    border-radius: 5px;
+    background: transparent;
+    color: rgba(79, 79, 79, 1);
 }
 
 .delete-btn {
@@ -20573,13 +20579,28 @@ input[type='number'] {
 .file-name {
     width: 100%;
     max-width: 50%;
-    border: 1px solid red;
+    border: 1px solid rgba(174, 174, 174, 1);
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
     margin-right: 10px;
+    height: 47px;
+    line-height: 47px;
+    border-radius: 8px;
+    padding: 0px 8px;
 }
 
+.file-name:hover {
+    border: 1px solid var(--color-orange);
+}
+
+.file-name:focus-visible {
+    border: 1px solid var(--color-orange);
+}
+
+.file-name:active {
+    border: 1px solid var(--color-orange);
+}
 
 .row {
     display: flex;
@@ -20609,9 +20630,23 @@ input[type='number'] {
 }
 
 .upload {
+    width: 100%;
     position: relative;
-    border: 1px solid #FF8630;
-    border-radius: 16px;
+    border: 1px solid rgba(174, 174, 174, 1);
+    border-radius: 8px;
+    height: 47px;
+}
+
+.upload:hover {
+    border: 1px solid var(--color-orange);
+}
+
+.upload:focus {
+    border: 1px solid var(--color-orange);
+}
+
+.upload:active {
+    wborder: 1px solid var(--color-orange);
 }
 
 .upload__counter {
@@ -20653,57 +20688,5 @@ input[type='number'] {
     height: 22px;
     margin-top: 15px;
 }
-
-.button {
-    display: block;
-    min-width: 210px;
-    border: 2px solid transparent;
-    border-radius: 6px;
-    padding: 9px 15px;
-    color: #000000;
-    font-size: 18px;
-    font-weight: 300;
-    font-family: inherit;
-    transition: background-color 0.2s linear;
-}
-
-.button-orange {
-    background-color: #FF8630;
-}
-
-.button:hover {
-    background-color: #FFFFFF;
-    cursor: pointer;
-    transition: background-color 0.2s linear;
-}
-
-.button:focus-visible {
-    border: 2px solid #FFFFFF;
-    outline: none;
-}
-
-.button:focus {
-    border: 2px solid #FFFFFF;
-    outline: none;
-}
-
-@media (max-width: 768px) {
-    body {
-        padding: 30px;
-    }
-
-    .row {
-        display: block;
-    }
-
-    .upload, .button, .container {
-        width: 100%;
-    }
-
-    .upload {
-        margin-top: 10px;
-    }
-}
-
 
 /*измекнение от 09_04_25*/
