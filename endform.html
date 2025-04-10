@@ -110,19 +110,24 @@
                     </div>
                     <div class="file-list">
                         <div id="progressContainer" class="hidden">
-                            <div id="progressText" class="progress-text">0%</div>
+                            <div id="progressText" class="progress-text">Загрузка файлов 0%</div>
                         </div>
 
                         <div id="fileList"></div>
-                        <button id="deleteAllBtn" class="delete-all-btn hidden" onclick="deleteAllFiles()">
-                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <button id="deleteAllBtn" class="delete-all-btn hidden" type="button"
+                                onclick="deleteAllFiles()">
+                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
                                 <g clip-path="url(#clip0_2181_45441)">
-                                    <path d="M14.7863 7.07153L13.5006 17.3572H4.50056L3.21484 7.07153" stroke="currentColor"
+                                    <path d="M14.7863 7.07153L13.5006 17.3572H4.50056L3.21484 7.07153"
+                                          stroke="currentColor"
                                           stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M1.28613 4.5H16.7147" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                    <path d="M1.28613 4.5H16.7147" stroke="currentColor" stroke-width="1.5"
+                                          stroke-linecap="round"
                                           stroke-linejoin="round"/>
                                     <path d="M5.73438 4.12719V1.9029C5.73438 1.56191 5.86983 1.23488 6.11095 0.993764C6.35207 0.752646 6.6791 0.617188 7.02009 0.617188H10.8772C11.2182 0.617188 11.5453 0.752646 11.7864 0.993764C12.0275 1.23488 12.1629 1.56191 12.1629 1.9029V4.47433"
-                                          stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                          stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                          stroke-linejoin="round"/>
                                 </g>
                                 <defs>
                                     <clipPath id="clip0_2181_45441">
@@ -147,165 +152,6 @@
     </div>
 </div>
 
-<div class="container">
-    <!--    <input type="file" id="fileInput" multiple class="hidden">-->
-    <!--    <label for="fileInput">Выбрать файлы</label>-->
-    <!--    <div id="progressContainer" class="hidden">-->
-    <!--        <div id="progressText" class="progress-text">0%</div>-->
-    <!--    </div>-->
-    <!--    <div id="fileList"></div>-->
-<!--    <button id="deleteAllBtn" class="delete-all-btn hidden" onclick="deleteAllFiles()">-->
-<!--        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">-->
-<!--            <g clip-path="url(#clip0_2181_45441)">-->
-<!--                <path d="M14.7863 7.07153L13.5006 17.3572H4.50056L3.21484 7.07153" stroke="currentColor"-->
-<!--                      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>-->
-<!--                <path d="M1.28613 4.5H16.7147" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"-->
-<!--                      stroke-linejoin="round"/>-->
-<!--                <path d="M5.73438 4.12719V1.9029C5.73438 1.56191 5.86983 1.23488 6.11095 0.993764C6.35207 0.752646 6.6791 0.617188 7.02009 0.617188H10.8772C11.2182 0.617188 11.5453 0.752646 11.7864 0.993764C12.0275 1.23488 12.1629 1.56191 12.1629 1.9029V4.47433"-->
-<!--                      stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>-->
-<!--            </g>-->
-<!--            <defs>-->
-<!--                <clipPath id="clip0_2181_45441">-->
-<!--                    <rect width="18" height="18" fill="white"/>-->
-<!--                </clipPath>-->
-<!--            </defs>-->
-<!--        </svg>-->
-<!--    </button>-->
-</div>
-
-<script>
-    const MAX_FILES = 3;
-    const fileInput = document.getElementById('fileInput');
-    console.log(fileInput);
-    const progressContainer = document.getElementById('progressContainer');
-    const progressText = document.getElementById('progressText');
-    const fileList = document.getElementById('fileList');
-    const deleteAllBtn = document.getElementById('deleteAllBtn');
-    let uploadInterval;
-    let currentFiles = new DataTransfer();
-    let pendingFiles = []; // Файлы, ожидающие отображения
-
-    // fileInput.addEventListener('change', function (e) {
-    //     const newFiles = Array.from(e.target.files);
-    //     const availableSlots = MAX_FILES - currentFiles.items.length;
-    //
-    //     const uniqueNewFiles = newFiles.filter(newFile =>
-    //         !Array.from(currentFiles.files).some(existingFile =>
-    //             existingFile.name === newFile.name &&
-    //             existingFile.size === newFile.size
-    //         )
-    //     ).slice(0, availableSlots);
-    //
-    //     // if (pendingFiles.length < MAX_FILES) {
-    //         uniqueNewFiles.forEach(file => currentFiles.items.add(file));
-    //         fileInput.files = currentFiles.files;
-    //
-    //         // Сохраняем файлы для отложенного отображения
-    //         pendingFiles = Array.from(currentFiles.files);
-    //         startProgress();
-    //     // } else {
-    //     //     alert("что за жопа?");
-    //     //     return;
-    //     // }
-    // });
-
-    fileInput.addEventListener('change', function (e) {
-        const newFiles = Array.from(e.target.files);
-        const availableSlots = MAX_FILES - currentFiles.items.length;
-
-        // Проверка 1: Если места нет
-        if (availableSlots <= 0) {
-            alert(`Максимальное количество файлов: ${MAX_FILES}!`);
-            e.target.value = '';
-            return;
-        }
-
-        // Проверка 2: Новых файлов больше доступных слотов
-        if (newFiles.length > availableSlots) {
-            alert(`Можно добавить только ${availableSlots} файлов из ${newFiles.length}!`);
-            e.target.value = '';
-            return;
-        }
-
-        // Фильтрация дубликатов
-        const uniqueNewFiles = newFiles.filter(newFile =>
-            !Array.from(currentFiles.files).some(existingFile =>
-                existingFile.name === newFile.name &&
-                existingFile.size === newFile.size
-            )
-        ).slice(0, availableSlots);
-
-        // Проверка 3: Все файлы - дубликаты
-        if (uniqueNewFiles.length === 0) {
-            alert('Все выбранные файлы уже добавлены!');
-            e.target.value = '';
-            return;
-        }
-
-        uniqueNewFiles.forEach(file => currentFiles.items.add(file));
-        fileInput.files = currentFiles.files;
-        pendingFiles = Array.from(fileInput.files);
-        startProgress();
-    });
-
-    // Добавьте эту функцию для проверки
-    function logCurrentFiles() {
-        console.log('Текущие файлы:', Array.from(fileInput.files).map(f => f.name));
-        console.log('Количество файлов:', fileInput.files.length);
-    }
-
-
-    function startProgress() {
-        let progress = 0;
-        fileList.innerHTML = ''; // Очищаем список перед началом новой загрузки
-        progressContainer.classList.remove('hidden');
-        deleteAllBtn.classList.add('hidden');
-
-        uploadInterval = setInterval(() => {
-            progress += 2;
-            progressText.textContent = `${progress}%`;
-
-            if (progress >= 100) {
-                clearInterval(uploadInterval);
-                progressContainer.classList.add('hidden');
-                deleteAllBtn.classList.remove('hidden');
-                renderFileList(); // Показываем файлы только после завершения прогресса
-            }
-        }, 50);
-    }
-
-    function renderFileList() {
-        fileList.innerHTML = '';
-        pendingFiles.forEach((file, index) => {
-            const item = document.createElement('div');
-            item.className = 'file-item';
-            item.innerHTML = `
-        <span>${file.name}</span>
-
-      `;
-            fileList.appendChild(item);
-        });
-    }
-
-    function removeFile(index) {
-        const newDataTransfer = new DataTransfer();
-        pendingFiles.forEach((file, i) => {
-            if (i !== index) newDataTransfer.items.add(file);
-        });
-        currentFiles = newDataTransfer;
-        fileInput.files = currentFiles.files;
-        pendingFiles = Array.from(fileInput.files);
-        renderFileList();
-    }
-
-    function deleteAllFiles() {
-        currentFiles = new DataTransfer();
-        fileInput.files = currentFiles.files;
-        pendingFiles = [];
-        fileList.innerHTML = '';
-        deleteAllBtn.classList.add('hidden');
-        if (uploadInterval) clearInterval(uploadInterval);
-    }
-</script>
+<script src="script-input-file.js" defer></script>
 </body>
 </html>
