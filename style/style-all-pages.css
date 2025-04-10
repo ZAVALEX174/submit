@@ -20756,6 +20756,28 @@ input[type='number'] {
     border-radius: 8px;
 }
 
+.delete-item-file {
+    width: 18px;
+    height: 18px;
+    border: none;
+    background-color: transparent;
+    transition: 0.3s ease-in;
+    cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+    color: var(--color-orange);
+}
+
+.delete-item-file svg {
+    color: #2B2A29;
+    transition: 0.3s ease-in;
+}
+
+.delete-item-file:hover svg {
+    color: var(--color-orange);
+}
+
 /*.input-file {*/
 /*    display: block !important;*/
 /*    opacity: 1;*/

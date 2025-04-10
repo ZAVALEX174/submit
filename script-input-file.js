@@ -92,6 +92,20 @@ function renderFileList() {
         item.className = 'file-item';
         item.innerHTML = `
         <div>${file.name}</div>
+        <button class="delete-item-file" onclick="removeFile(${index})" style="margin-left: auto">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_2181_45441)">
+<path d="M14.7863 7.07153L13.5006 17.3572H4.50056L3.21484 7.07153" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1.28613 4.5H16.7147" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M5.73438 4.12719V1.9029C5.73438 1.56191 5.86983 1.23488 6.11095 0.993764C6.35207 0.752646 6.6791 0.617188 7.02009 0.617188H10.8772C11.2182 0.617188 11.5453 0.752646 11.7864 0.993764C12.0275 1.23488 12.1629 1.56191 12.1629 1.9029V4.47433" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<clipPath id="clip0_2181_45441">
+<rect width="18" height="18" fill="white"/>
+</clipPath>
+</defs>
+</svg>
+</button>
       `;
         fileList.appendChild(item);
     });
