@@ -120,6 +120,12 @@ function removeFile(index) {
     fileInput.files = currentFiles.files;
     pendingFiles = Array.from(fileInput.files);
     renderFileList();
+
+    console.log(pendingFiles.length, "длина");
+
+    if (pendingFiles.length == 0) {
+        deleteAllFiles();
+    }
 }
 
 
