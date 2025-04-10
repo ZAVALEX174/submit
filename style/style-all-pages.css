@@ -20529,14 +20529,17 @@ input[type='number'] {
 
 /*измекнение от 09_04_25*/
 .file-list {
-    margin: 15px 0;
+    margin: 0;
     padding: 0;
-    /*border: 1px solid rgba(174, 174, 174, 1);*/
-    /*border-radius: 5px;*/
+    border: 1px solid rgba(174, 174, 174, 1);
+    border-radius: 8px;
     /*box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);*/
-    display: flex;
+    /*display: flex;*/
+    display: none;
     flex-direction: column;
-    row-gap: 15px;
+    position: relative;
+    background-color: var(--5);
+    margin-bottom: 10px;
 }
 
 .file-item {
@@ -20547,60 +20550,57 @@ input[type='number'] {
     color: rgba(79, 79, 79, 1);
 }
 
-.delete-btn {
-    background: transparent;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    margin-left: 10px;
+/*.delete-btn {*/
+/*    background: transparent;*/
+/*    border: none;*/
+/*    padding: 10px;*/
+/*    cursor: pointer;*/
+/*    margin-left: 10px;*/
 
-    position: relative;
-    z-index: 1;
-}
+/*    position: relative;*/
+/*    z-index: 1;*/
+/*}*/
 
-.delete-btn svg {
-    width: 18px;
-    height: 18px;
-    color: #2B2A29;
-    position: relative;
-    z-index: 0;
-}
+/*.delete-btn svg {*/
+/*    width: 18px;*/
+/*    height: 18px;*/
+/*    color: #2B2A29;*/
+/*    position: relative;*/
+/*    z-index: 0;*/
+/*}*/
 
-.delete-btn:hover svg {
-    color: var(--color-orange);
-}
+/*.delete-btn:hover svg {*/
+/*    color: var(--color-orange);*/
+/*}*/
 
 .warning {
+    width: 100%;
+    border: 1px solid var(--color-orange);
     color: #ff4444;
-    margin-top: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    text-align: center;
     display: none;
+    font-size: 20px;
+    border-radius: 8px;
 }
 
-.file-item .file-name {
+.file-item > div {
     width: 100%;
-    max-width: 50%;
-    border: 1px solid rgba(174, 174, 174, 1);
+    /*border: 1px solid rgba(174, 174, 174, 1);*/
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    margin-right: 10px;
     height: 47px;
     line-height: 47px;
-    border-radius: 8px;
-    padding: 0px 8px;
-    color: var(--color-orange);
+    color: var(--dark-gray);
+    font-family: "Golos Text Regular", sans-serif;
+    font-weight: 400;
+    font-size: 16px;
 }
 
-.file-name:hover {
-    border: 1px solid var(--color-orange);
-}
-
-.file-name:focus-visible {
-    border: 1px solid var(--color-orange);
-}
-
-.file-name:active {
-    border: 1px solid var(--color-orange);
+#fileList {
+    /*margin-bottom: 10px;*/
 }
 
 .row {
@@ -20696,40 +20696,51 @@ input[type='number'] {
 /*}*/
 
 .progress-text {
-    color: var(--color-orange);
-    font-family: 'Golos Text SemiBold', sans-serif;
-    font-weight: 600;
-    font-size: 20px;
-    margin: 10px 0;
+    margin: 0;
+    color: var(--dark-gray);
+    font-family: 'Golos Text Regular', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    text-align: center;
+    line-height: 47px;
+    height: 47px;
 }
 
 .file-item {
     display: flex;
     align-items: center;
-    margin: 5px 0;
-    padding: 8px;
-    background: #f5f5f5;
-    border-radius: 4px;
+    margin: 0 20px;
 }
 
 .delete-all-btn {
-    background: var(--color-orange);
-    color: white;
-    border: none;
+    display: inline-flex;
+    outline: none;
+    max-width: 200px;
+    align-items: center;
+    justify-content: center;
+    background: #d1d1d1;
+    border: 1px solid transparent;
     padding: 8px 15px;
-    border-radius: 4px;
+    border-radius: 100px;
     cursor: pointer;
-    margin-top: 10px;
+    margin: 20px 0 10px 20px;
+    font-family: "Golos Text Regular", sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 137%;
+    text-align: center;
+    color: var(--dark-gray);
+
     transition: 0.3s ease-in;
 }
 
 .delete-all-btn:hover {
-    background: var(--ligth-gray);
+    background: var(--color-orange);
+    color: var(--main-bg);
 }
 
 .file-item {
     max-width: 100%;
-    width: 100%;
 }
 
 .file-item .file-name {
@@ -20741,6 +20752,8 @@ input[type='number'] {
     max-width: 100%;
     width: 100%;
     text-align: center;
+    border: 1px solid var(--color-orange);
+    border-radius: 8px;
 }
 
 /*.input-file {*/

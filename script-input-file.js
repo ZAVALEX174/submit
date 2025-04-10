@@ -1,10 +1,11 @@
 const MAX_FILES = 3;
 const fileInput = document.getElementById('fileInput');
-console.log(fileInput);
 const progressContainer = document.getElementById('progressContainer');
 const progressText = document.getElementById('progressText');
 const fileList = document.getElementById('fileList');
 const deleteAllBtn = document.getElementById('deleteAllBtn');
+const warningMessage = document.querySelector('.warning');
+const fileBox = document.querySelector('.file-list');
 let uploadInterval;
 let currentFiles = new DataTransfer();
 let pendingFiles = []; // Файлы, ожидающие отображения
@@ -15,14 +16,16 @@ fileInput.addEventListener('change', function (e) {
 
     // Проверка 1: Если места нет
     if (availableSlots <= 0) {
-        alert(`Максимальное количество файлов: ${MAX_FILES}!`);
+        // alert(`Максимальное количество файлов: ${MAX_FILES}!`);
+        warningMessage.style.display = 'block'
         e.target.value = '';
         return;
     }
 
     // Проверка 2: Новых файлов больше доступных слотов
     if (newFiles.length > availableSlots) {
-        alert(`Можно добавить только ${availableSlots} файлов из ${newFiles.length}!`);
+        // alert(`Можно добавить только ${availableSlots} файлов из ${newFiles.length}!`);
+        warningMessage.style.display = 'block'
         e.target.value = '';
         return;
     }
@@ -49,20 +52,22 @@ fileInput.addEventListener('change', function (e) {
 });
 
 // Добавьте эту функцию для проверки
-function logCurrentFiles() {
-    console.log('Текущие файлы:', Array.from(fileInput.files).map(f => f.name));
-    console.log('Количество файлов:', fileInput.files.length);
-}
+// function logCurrentFiles() {
+//     console.log('Текущие файлы:', Array.from(fileInput.files).map(f => f.name));
+//     console.log('Количество файлов:', fileInput.files.length);
+// }
 
 
 function startProgress() {
+    fileBox.style.display = 'flex';
+    warningMessage.style.display = 'none';
     let progress = 0;
     fileList.innerHTML = ''; // Очищаем список перед началом новой загрузки
     progressContainer.classList.remove('hidden');
     deleteAllBtn.classList.add('hidden');
 
     uploadInterval = setInterval(() => {
-        progress += 10;
+        progress += 5;
         progressText.textContent = `Загрузка файлов ${progress}%`;
 
         if (progress >= 100) {
@@ -80,7 +85,7 @@ function renderFileList() {
         const item = document.createElement('div');
         item.className = 'file-item';
         item.innerHTML = `
-        <span>${file.name}</span>
+        <div>${file.name}</div>
       `;
         fileList.appendChild(item);
     });
@@ -109,6 +114,9 @@ function deleteAllFiles() {
     fileList.innerHTML = '';
     // Скрываем кнопку удаления
     deleteAllBtn.classList.add('hidden');
+
+    warningMessage.style.display = 'none';
+    fileBox.style.display = 'none';
 
     // Добавляем сброс значения инпута для полной очистки
     fileInput.value = '';
