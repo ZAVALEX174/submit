@@ -14,40 +14,46 @@ fileInput.addEventListener('change', function (e) {
     const newFiles = Array.from(e.target.files);
     const availableSlots = MAX_FILES - currentFiles.items.length;
 
+    // Сбрасываем только UI предупреждения
+    warningMessage.style.display = 'none';
+
     // Проверка 1: Если места нет
     if (availableSlots <= 0) {
-        // alert(`Максимальное количество файлов: ${MAX_FILES}!`);
-        warningMessage.style.display = 'block'
-        e.target.value = '';
+        warningMessage.style.display = 'block';
+        fileInput.files = currentFiles.files; // Восстанавливаем предыдущие файлы
         return;
     }
 
     // Проверка 2: Новых файлов больше доступных слотов
     if (newFiles.length > availableSlots) {
-        // alert(`Можно добавить только ${availableSlots} файлов из ${newFiles.length}!`);
-        warningMessage.style.display = 'block'
-        e.target.value = '';
+        warningMessage.style.display = 'block';
+        fileInput.files = currentFiles.files; // Восстанавливаем предыдущие файлы
         return;
     }
 
-    // Фильтрация дубликатов
-    const uniqueNewFiles = newFiles.filter(newFile =>
-        !Array.from(currentFiles.files).some(existingFile =>
+    // Проверка на дубликаты
+    const duplicateFiles = newFiles.filter(newFile =>
+        Array.from(currentFiles.files).some(existingFile =>
             existingFile.name === newFile.name &&
             existingFile.size === newFile.size
         )
-    ).slice(0, availableSlots);
+    );
 
-    // Проверка 3: Все файлы - дубликаты
-    if (uniqueNewFiles.length === 0) {
-        alert('Все выбранные файлы уже добавлены!');
-        e.target.value = '';
+    if (duplicateFiles.length > 0) {
+        const duplicateNames = duplicateFiles.map(f => `• ${f.name}`).join('\n');
+        alert(`Дубликаты:\n${duplicateNames}`);
+        fileInput.files = currentFiles.files; // Восстанавливаем предыдущие файлы
         return;
     }
 
-    uniqueNewFiles.forEach(file => currentFiles.items.add(file));
+    // Добавление новых файлов
+    newFiles.slice(0, availableSlots).forEach(file => {
+        currentFiles.items.add(file);
+    });
+
+    // Синхронизация с инпутом
     fileInput.files = currentFiles.files;
-    pendingFiles = Array.from(fileInput.files);
+    pendingFiles = Array.from(currentFiles.files);
     startProgress();
 });
 
@@ -104,6 +110,8 @@ function removeFile(index) {
 
 
 function deleteAllFiles() {
+    currentFiles = new DataTransfer();
+    fileInput.files = currentFiles.files; // Синхронизация
     // Очищаем DataTransfer
     currentFiles = new DataTransfer();
     // Очищаем файлы в инпуте
